@@ -17,27 +17,30 @@ const store= new Vuex.Store({
 		isCreatedData: false, // 是否初始化了数据
 		userInfo: {}, // 存储个人信息
 		initData: {}, // 初始化模拟的个人数据
+		currentLang: 'Britain' // 当前语言环境
 	},
 	getters:{
 		userInfo:()=>state.userInfo,
 		isCreatedData:()=>state.isCreatedData,
 		initData:()=>state.initData,
+		
 	},
 	mutations:{
 		INIT_DATA(state,data){
 			state.initData = data
 		},
-		INIT_USER_INFO(state,data){
+		SET_USER_INFO(state,data){
 			state.userInfo = data
 		},
 		IS_CREATED_DATA(state,value){
 			state.isCreatedData = value
-		}
+		},
+		SET_CURRENT_LANG(state,value){
+			state.currentLang = value
+		},
 	},
 	actions:{},
-	modules:{
-		
-	}
+	modules:{}
 })
 
 export default store

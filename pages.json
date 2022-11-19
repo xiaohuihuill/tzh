@@ -2,23 +2,35 @@
 	"pages": [
 		{
 			"path": "pages/index/index",
-			"navigationBarTextStyle": "#fff"
+			"navigationBarTextStyle": "white"
 		},
 		{
 			"path": "pages/loading/index",
-			"navigationBarTextStyle": "#fff"
+			"navigationBarTextStyle": "white"
 		},
 		{
 			"path": "pages/dataCreation/index",
-			"navigationBarTextStyle": "#fff"
+			"navigationBarTextStyle": "white"
 		},
 		{
 			"path": "pages/startUp/index",
-			"navigationBarTextStyle": "#fff"
+			"navigationBarTextStyle": "white"
+		},
+		{
+			"path": "pages/carbonEmission/index",
+			"navigationBarTextStyle": "white"
+		},
+		{
+			"path": "pages/carbonOffset/index",
+			"navigationBarTextStyle": "white"
+		},
+		{
+			"path": "pages/my/index",
+			"navigationBarTextStyle": "white"
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "#fff",
+		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "OCANZ",
 		"navigationBarBackgroundColor": "#087180",
 		"backgroundColor": "#F8F8F8"

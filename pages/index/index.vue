@@ -8,51 +8,12 @@
 			</view>
 			<canvas id="myEcharts"></canvas>
 		</view>
-		<view>用户名：{{ userInfo.name }}</view>
-		<view>年龄：{{ userInfo.age }}</view>
-		<view @click="create">登录</view>
-		<view class="text-area">
-			<text class="title">{{ title }}</text>
-		</view>
-		<u-button text="月落"></u-button>
-		<u-button type="primary" shape="circle" text="按钮形状"></u-button>
-		<u-button text="渐变色按钮" color="linear-gradient(to right, rgb(66, 83, 216), rgb(213, 51, 186))"></u-button>
-		<u-cell-group style="width: 100%;">
-			<u-cell size="large" title="单元格" value="内容" isLink></u-cell>
-			<u-cell size="large" title="单元格" value="内容" label="描述信息"></u-cell>
-		</u-cell-group>
-		<u-line-progress :percentage="50" style="width: 100%;">
-			<text class="u-percentage-slot">{{ 30 }}%</text>
-		</u-line-progress>
-		<u-upload :fileList="fileList1" @afterRead="afterRead" @delete="deletePic" name="1" multiple :maxCount="10">
-		</u-upload>
-		<u-count-to :start-val="30" :end-val="500"></u-count-to>
-		<u-circle-progress active-color="#2979ff" :percent="80" round="true">
-			<view class="u-progress-content">
-				<view class="u-progress-dot"></view>
-				<text class='u-progress-info'>查找中</text>
-			</view>
-		</u-circle-progress>
 
-		<u-line-progress style="width: 100%;" :percent="70" :round="false" active-color="#ff9900"></u-line-progress>
-
-		<view>
-			<u-modal :show="show" :title="title" :content='content'></u-modal>
-			<u-button @click="show = true">打开</u-button>
-		</view>
-		<u-calendar :show="show2"></u-calendar>
-		<u-button @click="show2 = true">打开</u-button>
-
-		<u-number-box v-model="value" @change="valChange"></u-number-box>
-		<!-- <u-count-to :startVal="30" :endVal="500"></u-count-to> -->
-
-		<u-tooltip text="下方显示" direction="bottom"></u-tooltip>
-		<u-tabbar :value="value1" @change="name => value6 = name" :fixed="true" :placeholder="true"
-			:safeAreaInsetBottom="true">
-			<u-tabbar-item text="碳中和" name="home" icon="home" @click="click1"></u-tabbar-item>
-			<u-tabbar-item text="碳排放" name="photo" icon="photo" @click="click2"></u-tabbar-item>
-			<u-tabbar-item text="碳抵消" name="play-right" icon="play-right" @click="click3"></u-tabbar-item>
-			<u-tabbar-item text="我的" name="account" icon="account" @click="click4"></u-tabbar-item>
+		<u-tabbar :value="currentTabbar" :fixed="true" :placeholder="true" :safeAreaInsetBottom="true">
+			<u-tabbar-item text="碳中和" name="home" icon="home"></u-tabbar-item>
+			<u-tabbar-item text="碳排放" name="carbonEmission" icon="photo" @click="toCarbonEmissionPage"></u-tabbar-item>
+			<u-tabbar-item text="碳抵消" name="carbonOffset" icon="play-right" @click="toCarbonOffsetPage"></u-tabbar-item>
+			<u-tabbar-item text="我的" name="my" icon="account" @click="toMyPage"></u-tabbar-item>
 		</u-tabbar>
 
 	</view>
@@ -62,6 +23,7 @@
 
 import * as echarts from 'echarts';
 import { mapState, mapMutations } from 'vuex'//引入mapState
+import { isAuth } from './../../utils/h5-interceptor.js'
 export default {
 	components: {},
 	computed: {
@@ -69,62 +31,68 @@ export default {
 	},
 	data () {
 		return {
-			// 这里初始化一个null，待会儿用来充当echarts实例
 			myChart: null,
-			show: false,
-			show1: false,
-			show2: false,
-			content: '东临碣石，以观沧海',
-			title: 'Hello',
-			value1: 0,
-			value: 0,
-			list: [{
-				text: '点赞',
-				color: 'blue',
-				fontSize: 28
-			}, {
-				text: '分享'
-			}, {
-				text: '评论'
-			}],
-			fileList1: [],
+			// 这里初始化一个null，待会儿用来充当echarts实例
+			currentTabbar: 'home',
+			storageSize: '',
 		}
 	},
-	onLoad () {
-		// 是否跳转创建数据页面
-		if (!this.isCreatedData) {
-			// this.INIT_DATA({
-			// 	age:'18',
-			// 	name:'名称',
-			// })
-			uni.redirectTo({
-				url: '/pages/loading/index'
-			})
+	async onLoad () {
+		try {
+			await isAuth() // 判断权限  是否跳转创建数据页面
+		} catch (err) {
+			console.log(err)
 		}
+	},
+	onShow () {
 		let that = this;
-		// 通过nextTick异步画图
 		this.$nextTick(() => {
 			that.drawLines();
-		});
-		console.log('已创建数据')
+		})
 	},
 	methods: {
 		...mapMutations([   //使用es6的拓展运算符
 			'INIT_DATA',
 			'IS_CREATED_DATA'
 		]),
+		getStorageSize () {
+			let that = this;
+			uni.getStorageInfo({
+				success (res) {
+					console.log(res)
+					console.log(res.keys);
+					console.log(res.limitSize);
+					let size = res.currentSize;
+					if (size < 1024) {
+						that.storageSize = size + ' B';
+					} else if (size / 1024 >= 1 && size / 1024 / 1024 < 1) {
+						that.storageSize = Math.floor(size / 1024 * 100) / 100 + ' KB';
+					} else if (size / 1024 / 1024 >= 1) {
+						that.storageSize = Math.floor(size / 1024 / 1024 * 100) / 100 + ' M';
+					}
+				}
+			})
+		},
 		create () {
 			this.IS_CREATED_DATA(true)
 		},
 		open () {
 			this.show = true;
 		},
-		click1 (e) {
-			console.log('click1', e);
-			this.value1 = e
+		toCarbonEmissionPage () {
+			uni.redirectTo({
+				url: '/pages/carbonEmission/index'
+			})
 		},
-		change (e) {
-			console.log('change1', e);
+		toCarbonOffsetPage () {
+			uni.redirectTo({
+				url: '/pages/carbonOffset/index'
+			})
+		},
+		toMyPage () {
+			uni.redirectTo({
+				url: '/pages/my/index'
+			})
 		},
 		// 删除图片
 		deletePic (event) {
@@ -169,8 +137,15 @@ export default {
 			})
 		},
 		async drawLines () {
+			let myEchartsEle = null
+			console.log('document--------------', document)
+			if (!document) return
+			console.log('document.getElementById()', document.getElementById('myEcharts'))
+			myEchartsEle = document.getElementById('myEcharts')
+			if (!myEchartsEle) return
 			// 这里是初始化的方式，通过id查询找到你的canvas标签
-			this.myChart = echarts.init(document.getElementById('myEcharts'));
+			this.myChart = echarts.init(myEchartsEle);
+			console.log('this.myChart ', this.myChart)
 			// 这里我初始化了4个数组用来存放 后端接口给我的数据
 			let data = [];
 			let tian = [];
@@ -252,8 +227,8 @@ export default {
 	},
 	beforeDestroy () {
 		// 页面关闭时销毁echarts实例
-		this.myChart.clear();
-		this.myChart.dispose();
+		this && this.myChart && this.myChart.clear();
+		this && this.myChart && this.myChart.dispose();
 	},
 }
 </script>
