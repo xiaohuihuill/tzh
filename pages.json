@@ -1,0 +1,29 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"navigationBarTextStyle": "#fff"
+		},
+		{
+			"path": "pages/loading/index",
+			"navigationBarTextStyle": "#fff"
+		},
+		{
+			"path": "pages/dataCreation/index",
+			"navigationBarTextStyle": "#fff"
+		},
+		{
+			"path": "pages/startUp/index",
+			"navigationBarTextStyle": "#fff"
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "#fff",
+		"navigationBarTitleText": "OCANZ",
+		"navigationBarBackgroundColor": "#087180",
+		"backgroundColor": "#F8F8F8"
+	},
+	"easycom": {
+		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+	}
+}
